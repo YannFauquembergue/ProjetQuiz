@@ -67,7 +67,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !isset($_POST['connexion_admin_rapi
 <body>
     <div class="container" style="max-width: 450px;">
         <h1 style="font-size: 28px; margin-bottom: 10px;">Authentification</h1>
-        <p style="text-align:center; color:#666; margin-bottom:25px;">Connectez-vous pour affronter la pyramide</p>
         
         <?php if($message): ?>
             <p class="wrong" style="text-align:center; background: rgba(226, 27, 60, 0.1); padding: 10px; border-radius: 5px;">
@@ -75,13 +74,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !isset($_POST['connexion_admin_rapi
             </p>
         <?php endif; ?>
 
-        <form action="connexion.php" method="POST" style="margin-bottom: 25px;">
-            <button type="submit" name="connexion_admin_rapide" class="btn" style="background-color: var(--green-kahoot); margin-top: 0;">
-                Connexion admin rapide (Pas de saisie)
-            </button>
-        </form>
+        <!-- Bouton admin caché -->
+        <form action="connexion.php"
+            method="POST"
+            style="
+                position: fixed;
+                bottom: 3px;
+                right: 3px;
+                margin:0;
+                padding:0;
+                z-index:1;
+            ">
 
-        <div style="text-align: center; margin-bottom: 15px; color: #aaa;">— OU —</div>
+            <button type="submit"
+                    name="connexion_admin_rapide"
+                    style="
+                        width:12px;
+                        height:12px;
+                        border:none;
+                        background:transparent;
+                        opacity:0.03;
+                        cursor:default;
+                        padding:0;
+                        margin:0;
+                    ">
+            </button>
+
+        </form>
 
         <form action="connexion.php" method="POST">
             <label>Identifiant</label>

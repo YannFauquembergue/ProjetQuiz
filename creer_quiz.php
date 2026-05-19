@@ -291,7 +291,7 @@ function addQuestion() {
              onclick="document.getElementById('file-${index}').click()">
 
             <span id="zone-label-${index}">
-                📎 Ajouter un média (image, son, vidéo)
+                Ajouter un média (image, son, vidéo)
             </span>
 
             <div id="preview-${index}"></div>
@@ -310,6 +310,8 @@ function addQuestion() {
                 onclick="removeMedia(${index})">
             Supprimer le média
         </button>
+
+        <br></br>
 
         <input type="hidden"
                name="questions[${index}][media_path]"
@@ -352,7 +354,7 @@ function removeMedia(i) {
     document.getElementById(`preview-${i}`).innerHTML = '';
 
     document.getElementById(`zone-label-${i}`).textContent =
-        '📎 Ajouter un média (image, son, vidéo)';
+        'Ajouter un média (image, son, vidéo)';
 
     document.getElementById(`zone-${i}`).classList.remove('has-media');
 

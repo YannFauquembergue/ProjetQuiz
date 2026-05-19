@@ -226,6 +226,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                onchange="uploadMedia(this, <?= $qi ?>)">
 
         <?php if ($q['media']): ?>
+        <br></br>
         <button type="button" class="btn-remove-media" onclick="removeMedia(<?= $qi ?>)">
             Supprimer le média
         </button>

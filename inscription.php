@@ -46,7 +46,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body>
     <div class="container" style="max-width: 450px;">
         <h1 style="font-size: 28px; margin-bottom: 10px;">Créer un compte</h1>
-        <p style="text-align:center; color:#666; margin-bottom:25px;">Rejoignez l'arène pour gravir les échelons</p>
         
         <?php if($message_erreur): ?>
             <p class="wrong" style="text-align:center; background: rgba(226, 27, 60, 0.1); padding: 10px; border-radius: 5px;">

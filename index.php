@@ -133,7 +133,7 @@ $mes_amis = $amis_stmt->fetchAll();
                         <div style="display:flex; gap:10px;">
 
                             <a href="jouer.php?id=<?= $q['id'] ?>" class="btn" style="margin:0; padding:10px 15px;">
-                                Défier
+                                Jouer
                             </a>
 
                             <?php if ($q['idutilisateur'] == $my_id): ?>
