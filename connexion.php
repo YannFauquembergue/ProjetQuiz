@@ -5,6 +5,8 @@ require 'config.php';
 $message = "";
 
 // LOGIQUE 1 : Si on clique sur le bouton de connexion Admin Rapide
+
+// Admin_systeme est un compte temporaire
 if (isset($_POST['connexion_admin_rapide'])) {
     $admin_pseudo = "Admin_Systeme";
     
@@ -15,7 +17,7 @@ if (isset($_POST['connexion_admin_rapide'])) {
 
     if (!$user) {
         // Si le compte admin n'existe pas encore, on le crée automatiquement en BDD
-        // Mot de passe fictif haché "admin123" (sécurité requise par la structure)
+        // Mot de passe fictif haché "admin123"
         $mdp_hache = password_hash("admin123", PASSWORD_DEFAULT);
         $insert = $pdo->prepare("INSERT INTO utilisateur (identifiant, mdp) VALUES (?, ?)");
         $insert->execute([$admin_pseudo, $mdp_hache]);
@@ -58,8 +60,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !isset($_POST['connexion_admin_rapi
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <title>Connexion - La Pyramide des Quiz</title>
+    <meta charset="utf-8">
+    <title>Projet quiz - Connexion</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -75,20 +77,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !isset($_POST['connexion_admin_rapi
 
         <form action="connexion.php" method="POST" style="margin-bottom: 25px;">
             <button type="submit" name="connexion_admin_rapide" class="btn" style="background-color: var(--green-kahoot); margin-top: 0;">
-                ⚡ Connexion Admin Rapide (Sans saisie)
+                Connexion admin rapide (Pas de saisie)
             </button>
         </form>
 
         <div style="text-align: center; margin-bottom: 15px; color: #aaa;">— OU —</div>
 
         <form action="connexion.php" method="POST">
-            <label>Identifiant / Pseudo</label>
+            <label>Identifiant</label>
             <input type="text" name="identifiant" autocomplete="username">
 
             <label>Mot de passe</label>
             <input type="password" name="mdp" autocomplete="current-password">
 
-            <button type="submit" class="btn">Entrer sur le Plateau</button>
+            <button type="submit" class="btn">Connexion</button>
             
             <a href="inscription.php" style="margin-top:20px; text-align:center; color: #1e295d; font-weight:600; text-decoration:none;">
                 Pas encore de compte ? S'inscrire

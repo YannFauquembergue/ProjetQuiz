@@ -1,7 +1,7 @@
 <?php
 // upload_media.php
 // Appelé en AJAX (fetch) depuis creer_quiz.php et modifier_quiz.php
-// Retourne JSON { "path": "uploads/xxx.jpg", "type": "image" }  ou { "error": "..." }
+// Retourne JSON { "path": "uploads/xxx.jpg", "type": "image" } si valide
 
 require 'config.php';
 header('Content-Type: application/json');
@@ -23,17 +23,19 @@ const MAX_SIZE_VIDEO = 30 * 1024 * 1024;   // 30 Mo
 
 $allowed = [
     // images
-    'image/jpeg'  => ['ext' => 'jpg',  'type' => 'image', 'max' => MAX_SIZE_IMAGE],
-    'image/png'   => ['ext' => 'png',  'type' => 'image', 'max' => MAX_SIZE_IMAGE],
-    'image/gif'   => ['ext' => 'gif',  'type' => 'image', 'max' => MAX_SIZE_IMAGE],
-    'image/webp'  => ['ext' => 'webp', 'type' => 'image', 'max' => MAX_SIZE_IMAGE],
+    'image/jpeg' => ['ext' => 'jpg',  'type' => 'image', 'max' => MAX_SIZE_IMAGE],
+    'image/png' => ['ext' => 'png',  'type' => 'image', 'max' => MAX_SIZE_IMAGE],
+    'image/gif' => ['ext' => 'gif',  'type' => 'image', 'max' => MAX_SIZE_IMAGE],
+    'image/webp' => ['ext' => 'webp', 'type' => 'image', 'max' => MAX_SIZE_IMAGE],
+
     // audio
-    'audio/mpeg'  => ['ext' => 'mp3',  'type' => 'audio', 'max' => MAX_SIZE_AUDIO],
-    'audio/ogg'   => ['ext' => 'ogg',  'type' => 'audio', 'max' => MAX_SIZE_AUDIO],
-    'audio/wav'   => ['ext' => 'wav',  'type' => 'audio', 'max' => MAX_SIZE_AUDIO],
+    'audio/mpeg' => ['ext' => 'mp3',  'type' => 'audio', 'max' => MAX_SIZE_AUDIO],
+    'audio/ogg' => ['ext' => 'ogg',  'type' => 'audio', 'max' => MAX_SIZE_AUDIO],
+    'audio/wav' => ['ext' => 'wav',  'type' => 'audio', 'max' => MAX_SIZE_AUDIO],
+
     // vidéo
-    'video/mp4'   => ['ext' => 'mp4',  'type' => 'video', 'max' => MAX_SIZE_VIDEO],
-    'video/webm'  => ['ext' => 'webm', 'type' => 'video', 'max' => MAX_SIZE_VIDEO],
+    'video/mp4' => ['ext' => 'mp4',  'type' => 'video', 'max' => MAX_SIZE_VIDEO],
+    'video/webm' => ['ext' => 'webm', 'type' => 'video', 'max' => MAX_SIZE_VIDEO],
 ];
 
 // Vérification MIME réelle (pas celle du navigateur)
@@ -61,7 +63,7 @@ if (!is_dir($uploadDir)) {
 
 // Nom unique non devinable
 $filename = bin2hex(random_bytes(16)) . '.' . $info['ext'];
-$dest     = $uploadDir . $filename;
+$dest = $uploadDir . $filename;
 
 if (!move_uploaded_file($_FILES['media']['tmp_name'], $dest)) {
     echo json_encode(['error' => 'Impossible de déplacer le fichier']);

@@ -39,8 +39,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <title>Inscription - La Pyramide des Quiz</title>
+    <meta charset="utf-8">
+    <title>Projet quiz - Inscription</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -61,7 +61,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <?php endif; ?>
 
         <form action="inscription.php" method="POST">
-            <label>Choisissez un Identifiant / Pseudo</label>
+            <label>Choisissez un identifiant</label>
             <input type="text" name="identifiant" required maxlength="25" autocomplete="username">
 
             <label>Mot de passe</label>

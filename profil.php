@@ -8,16 +8,12 @@ if (!isset($_SESSION['user_id'])) {
 
 $user_id = $_SESSION['user_id'];
 
-/* =========================
-   INFOS USER
-========================= */
+/* Information utilisateur */
 $stmt = $pdo->prepare("SELECT identifiant FROM utilisateur WHERE id = ?");
 $stmt->execute([$user_id]);
 $user = $stmt->fetch();
 
-/* =========================
-   RESULTATS QUIZ
-========================= */
+/* Résultats quiz */
 $stmt = $pdo->prepare("
     SELECT r.score, q.titre, q.id AS quiz_id
     FROM resultatquiz r
@@ -28,9 +24,7 @@ $stmt = $pdo->prepare("
 $stmt->execute([$user_id]);
 $resultats = $stmt->fetchAll();
 
-/* =========================
-   STATISTIQUES
-========================= */
+/* Statistiques */
 $total_quiz = count($resultats);
 $best_score = 0;
 
@@ -44,9 +38,9 @@ foreach ($resultats as $r) {
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<title>Mon espace</title>
-<link rel="stylesheet" href="style.css">
+    <meta charset="utf-8">
+    <title>Projet quiz - Mon espace</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>

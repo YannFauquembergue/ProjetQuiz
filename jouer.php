@@ -26,11 +26,11 @@ foreach ($questions as $question) {
     $reponses = $stmtR->fetchAll();
 
     $quiz_data[] = [
-        'id'         => $question['id'],
-        'sujet'      => $question['sujet'],
-        'media'      => $question['media']      ?? null,   // ← chemin fichier
+        'id' => $question['id'],
+        'sujet' => $question['sujet'],
+        'media' => $question['media'] ?? null,   // ← chemin fichier
         'media_type' => $question['media_type'] ?? null,   // ← 'image' | 'audio' | 'video' | null
-        'reponses'   => $reponses
+        'reponses' => $reponses
     ];
 }
 
@@ -41,8 +41,8 @@ $json_data = json_encode($quiz_data);
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <title>Kahoot Clone - En plein jeu</title>
+    <meta charset="utf-8">
+    <title>Projet quiz - En plein jeu</title>
     <link rel="stylesheet" href="style.css">
 
     <style>
@@ -82,7 +82,7 @@ $json_data = json_encode($quiz_data);
         <div id="question-box">
             <h2 id="question-text">Chargement de la question...</h2>
 
-            <!-- Média de la question (image / audio / vidéo) -->
+            <!-- Média de la question -->
             <div id="media-box" class="hidden"></div>
         </div>
 
@@ -101,9 +101,7 @@ $json_data = json_encode($quiz_data);
         const feedback     = document.getElementById('feedback');
         const mediaBox     = document.getElementById('media-box');
 
-        /* --------------------------------------------------
-           Affiche le média de la question (ou rien du tout)
-        -------------------------------------------------- */
+        // Affiche, si possible, le média
         function renderMedia(q) {
             mediaBox.innerHTML = '';
             mediaBox.classList.add('hidden');
@@ -134,9 +132,7 @@ $json_data = json_encode($quiz_data);
             }
         }
 
-        /* --------------------------------------------------
-           Charge la question courante
-        -------------------------------------------------- */
+        // Charge la question actuelle et affiche les réponses
         function loadQuestion() {
             feedback.innerText    = '';
             answersGrid.innerHTML = '';
@@ -161,9 +157,7 @@ $json_data = json_encode($quiz_data);
             });
         }
 
-        /* --------------------------------------------------
-           Vérification de la réponse choisie
-        -------------------------------------------------- */
+        // Fonction pour vérifier la réponse sélectionnée par l'utilisateur
         function checkAnswer(isTrue, selectedButton) {
             // Désactiver tous les boutons après le clic
             document.querySelectorAll('.answer-btn').forEach(btn => btn.disabled = true);

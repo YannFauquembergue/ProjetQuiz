@@ -5,11 +5,10 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 $host = '127.0.0.1';
-$port = '3306'; // Configuration explicite du port indiqué dans ton dump SQL
-$db   = 'projetquiz';
+$port = '3306';
+$db = 'projetquiz';
 $user = 'root';
-$pass = ''; // Laisse vide si tu es sur WampServer/XAMPP classique. 
-            // Si tu utilises MAMP sur Mac, remplace par 'root'
+$pass = '';
 
 $dsn = "mysql:host=$host;port=$port;dbname=$db;charset=utf8mb4";
 $options = [

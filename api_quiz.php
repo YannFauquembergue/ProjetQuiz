@@ -29,15 +29,15 @@ foreach ($questions as $question) {
     $reponses = $stmtR->fetchAll();
 
     $questions_pack[] = [
-        'id'         => $question['id'],
-        'sujet'      => $question['sujet'],
-        'media'      => $question['media'],       // chemin relatif ou null
-        'media_type' => $question['media_type'],  // 'image' | 'audio' | 'video' | null
-        'reponses'   => $reponses
+        'id' => $question['id'],
+        'sujet' => $question['sujet'],
+        'media' => $question['media'],
+        'media_type' => $question['media_type'],
+        'reponses' => $reponses
     ];
 }
 
 echo json_encode([
-    'titre'     => $quiz['titre'],
+    'titre' => $quiz['titre'],
     'questions' => $questions_pack
 ]);

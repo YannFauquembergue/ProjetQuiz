@@ -86,8 +86,8 @@ $mes_amis = $amis_stmt->fetchAll();
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <title>Plateau des défis</title>
+    <meta charset="utf-8">
+    <title>Projet quiz</title>
     <link rel="stylesheet" href="style.css">
 </head>
 
@@ -159,7 +159,7 @@ $mes_amis = $amis_stmt->fetchAll();
             <h3>Inviter des joueurs</h3>
 
             <form method="POST" style="margin-bottom:20px;">
-                <input type="text" name="nom_ami" placeholder="Rechercher un pseudo..." required>
+                <input type="text" name="nom_ami" placeholder="Rechercher un identifiant..." required>
                 <button type="submit" name="envoyer_demande" class="btn" style="margin-top:10px;">
                     Inviter
                 </button>

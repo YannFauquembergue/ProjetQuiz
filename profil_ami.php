@@ -26,12 +26,12 @@ if (!$check->fetch()) {
     die("Vous n'êtes pas amis avec cet utilisateur.");
 }
 
-/* Infos utilisateur */
+/* Information utilisateur */
 $stmt = $pdo->prepare("SELECT identifiant FROM utilisateur WHERE id = ?");
 $stmt->execute([$friend_id]);
 $user = $stmt->fetch();
 
-/* Résultats */
+/* Résultats quiz */
 $stmt = $pdo->prepare("
     SELECT r.score, q.titre, q.id AS quiz_id
     FROM resultatquiz r
@@ -42,7 +42,7 @@ $stmt = $pdo->prepare("
 $stmt->execute([$friend_id]);
 $resultats = $stmt->fetchAll();
 
-/* Stats */
+/* Statistiques */
 $total_quiz = count($resultats);
 $best_score = 0;
 
@@ -56,9 +56,9 @@ foreach ($resultats as $r) {
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<title>Profil ami</title>
-<link rel="stylesheet" href="style.css">
+    <meta charset="utf-8">
+    <title>Projet quiz - Espace ami</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>

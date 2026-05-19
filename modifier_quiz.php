@@ -8,7 +8,7 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 $my_id = $_SESSION['user_id'];
-$id    = intval($_GET['id'] ?? 0);
+$id = intval($_GET['id'] ?? 0);
 
 // On charge le quiz concerné
 $stmt = $pdo->prepare("SELECT * FROM quiz WHERE id = ?");
@@ -121,37 +121,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="utf-8">
-<title>Modifier Quiz</title>
-<link rel="stylesheet" href="style.css">
+    <meta charset="utf-8">
+    <title>Projet quiz - Modifier quiz</title>
+    <link rel="stylesheet" href="style.css">
 
-<style>
-.question-block {
-    border: 1px solid #ddd;
-    padding: 15px;
-    margin-bottom: 15px;
-    border-radius: 8px;
-    background: #fafafa;
-}
-.media-zone {
-    margin: 10px 0;
-    padding: 10px;
-    border: 2px dashed #bbb;
-    border-radius: 6px;
-    text-align: center;
-    cursor: pointer;
-    transition: border-color .2s;
-}
-.media-zone:hover               { border-color: #666; }
-.media-zone.has-media           { border-style: solid; border-color: #4CAF50; }
-.media-preview                  { max-width: 100%; max-height: 180px; margin-top: 8px; border-radius: 4px; }
-.media-preview-audio            { width: 100%; margin-top: 8px; }
-.media-preview-video            { max-width: 100%; max-height: 180px; margin-top: 8px; border-radius: 4px; }
-.upload-status                  { font-size: .85em; color: #555; margin-top: 4px; }
-.upload-status.ok               { color: #2e7d32; }
-.upload-status.err              { color: #c62828; }
-.btn-remove-media               { background: none; border: none; color: #c00; cursor: pointer; padding: 2px 0; font-size: .9em; }
-</style>
+    <style>
+    .question-block {
+        border: 1px solid #ddd;
+        padding: 15px;
+        margin-bottom: 15px;
+        border-radius: 8px;
+        background: #fafafa;
+    }
+    .media-zone {
+        margin: 10px 0;
+        padding: 10px;
+        border: 2px dashed #bbb;
+        border-radius: 6px;
+        text-align: center;
+        cursor: pointer;
+        transition: border-color .2s;
+    }
+    .media-zone:hover { border-color: #666; }
+    .media-zone.has-media { border-style: solid; border-color: #4CAF50; }
+    .media-preview { max-width: 100%; max-height: 180px; margin-top: 8px; border-radius: 4px; }
+    .media-preview-audio { width: 100%; margin-top: 8px; }
+    .media-preview-video { max-width: 100%; max-height: 180px; margin-top: 8px; border-radius: 4px; }
+    .upload-status { font-size: .85em; color: #555; margin-top: 4px; }
+    .upload-status.ok { color: #2e7d32; }
+    .upload-status.err { color: #c62828; }
+    .btn-remove-media { background: none; border: none; color: #c00; cursor: pointer; padding: 2px 0; font-size: .9em; }
+    </style>
 </head>
 
 <body>
@@ -159,10 +159,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <div class="container" style="max-width:700px;">
 
 <h1>Modification quiz</h1>
-
 <form method="POST">
 
-    <!-- QUIZ INFO -->
+    <!-- Information quiz -->
     <label>Titre</label>
     <input type="text" name="titre" value="<?= htmlspecialchars($quiz['titre']) ?>" required>
 
@@ -199,8 +198,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
              onclick="document.getElementById('file-<?= $qi ?>').click()">
             <span id="zone-label-<?= $qi ?>">
                 <?= $q['media']
-                    ? '✅ Média actuel (cliquer pour remplacer)'
-                    : '📎 Ajouter un média (image, son, vidéo)' ?>
+                    ? 'Média actuel (cliquer pour remplacer)'
+                    : 'Ajouter un média (image, son, vidéo)' ?>
             </span>
             <div id="preview-<?= $qi ?>">
                 <?php if ($q['media']): ?>
@@ -216,7 +215,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
 
         <div class="upload-status <?= $q['media'] ? 'ok' : '' ?>" id="status-<?= $qi ?>">
-            <?= $q['media'] ? '✔ Média enregistré' : '' ?>
+            <?= $q['media'] ? 'Média enregistré' : '' ?>
         </div>
 
         <!-- Input file caché -->
@@ -228,7 +227,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <?php if ($q['media']): ?>
         <button type="button" class="btn-remove-media" onclick="removeMedia(<?= $qi ?>)">
-            🗑 Supprimer le média
+            Supprimer le média
         </button>
         <?php endif; ?>
 
@@ -279,9 +278,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <script>
 let index = <?= count($questions) ?>;
 
-/* ============================================================
-   AJOUT QUESTION
-============================================================ */
+// Fonction ajout de question
 function addQuestion() {
     const container = document.getElementById('questions-container');
 
@@ -330,9 +327,7 @@ function removeQuestion(btn) {
     btn.closest('.question-block').remove();
 }
 
-/* ============================================================
-   SUPPRESSION MÉDIA
-============================================================ */
+// Fonction suppression média
 function removeMedia(i) {
     document.getElementById(`media-path-${i}`).value = '';
     document.getElementById(`media-type-${i}`).value = '';
@@ -344,9 +339,7 @@ function removeMedia(i) {
     st.className   = 'upload-status';
 }
 
-/* ============================================================
-   UPLOAD AJAX vers upload_media.php
-============================================================ */
+// Fonction upload média
 async function uploadMedia(input, i) {
     const file = input.files[0];
     if (!file) return;
@@ -356,7 +349,7 @@ async function uploadMedia(input, i) {
     const label   = document.getElementById(`zone-label-${i}`);
     const preview = document.getElementById(`preview-${i}`);
 
-    status.textContent = '⏳ Upload en cours…';
+    status.textContent = 'Upload en cours…';
     status.className   = 'upload-status';
     preview.innerHTML  = '';
 
@@ -368,7 +361,7 @@ async function uploadMedia(input, i) {
         const json = await res.json();
 
         if (json.error) {
-            status.textContent = '❌ ' + json.error;
+            status.textContent = 'Erreur: ' + json.error;
             status.className   = 'upload-status err';
             return;
         }
@@ -376,7 +369,7 @@ async function uploadMedia(input, i) {
         document.getElementById(`media-path-${i}`).value = json.path;
         document.getElementById(`media-type-${i}`).value = json.type;
 
-        label.textContent = '✅ ' + file.name;
+        label.textContent = 'Validé: ' + file.name;
         zone.classList.add('has-media');
         preview.innerHTML = '';
 
@@ -394,11 +387,11 @@ async function uploadMedia(input, i) {
             preview.appendChild(vi);
         }
 
-        status.textContent = '✔ Média prêt';
+        status.textContent = 'Média prêt';
         status.className   = 'upload-status ok';
 
     } catch (e) {
-        status.textContent = '❌ Erreur réseau : ' + e.message;
+        status.textContent = 'Erreur réseau: ' + e.message;
         status.className   = 'upload-status err';
     }
 }
