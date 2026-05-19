@@ -1,10 +1,9 @@
 <?php
-// jouer.php
 require 'config.php';
 
 $id_quiz = isset($_GET['id']) ? intval($_GET['id']) : 0;
+$defi_id = isset($_GET['defi']) ? intval($_GET['defi']) : 0;
 
-// Récupérer les infos du quiz
 $stmt = $pdo->prepare("SELECT * FROM quiz WHERE id = ?");
 $stmt->execute([$id_quiz]);
 $quiz = $stmt->fetch();
@@ -13,7 +12,7 @@ if (!$quiz) {
     die("Quiz introuvable.");
 }
 
-// Récupérer les questions et leurs réponses associées
+/* QUESTIONS */
 $stmtQ = $pdo->prepare("SELECT * FROM question WHERE idquiz = ?");
 $stmtQ->execute([$id_quiz]);
 $questions = $stmtQ->fetchAll();
@@ -21,6 +20,7 @@ $questions = $stmtQ->fetchAll();
 $quiz_data = [];
 
 foreach ($questions as $question) {
+
     $stmtR = $pdo->prepare("SELECT * FROM reponse WHERE idquestion = ?");
     $stmtR->execute([$question['id']]);
     $reponses = $stmtR->fetchAll();
@@ -28,186 +28,254 @@ foreach ($questions as $question) {
     $quiz_data[] = [
         'id' => $question['id'],
         'sujet' => $question['sujet'],
-        'media' => $question['media'] ?? null,   // ← chemin fichier
-        'media_type' => $question['media_type'] ?? null,   // ← 'image' | 'audio' | 'video' | null
+        'media' => $question['media'],
+        'media_type' => $question['media_type'],
         'reponses' => $reponses
     ];
 }
 
-// Encodage en JSON pour que le JavaScript puisse le lire facilement
+$defi_data = ['nom' => null, 'score' => null];
+
+if ($defi_id > 0) {
+
+    $stmt = $pdo->prepare("SELECT identifiant FROM utilisateur WHERE id = ?");
+    $stmt->execute([$defi_id]);
+    $u = $stmt->fetch();
+
+    if ($u) $defi_data['nom'] = $u['identifiant'];
+
+    $stmt = $pdo->prepare("
+        SELECT MAX(score) AS best_score
+        FROM resultatquiz
+        WHERE idutilisateur = ? AND idquiz = ?
+    ");
+    $stmt->execute([$defi_id, $id_quiz]);
+    $r = $stmt->fetch();
+
+    if ($r && $r['best_score'] !== null) {
+        $defi_data['score'] = (int)$r['best_score'];
+    }
+}
+
 $json_data = json_encode($quiz_data);
+$defi_json = json_encode($defi_data, JSON_UNESCAPED_UNICODE);
 ?>
 
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Projet quiz - En plein jeu</title>
+    <title>Quiz</title>
     <link rel="stylesheet" href="style.css">
 
     <style>
-        /* Zone média au-dessus des réponses */
-        #media-box {
-            text-align: center;
-            margin: 12px auto;
-        }
-        #media-box.hidden { display: none; }
+    .game-container {
+        max-width: 800px;
+        margin: auto;
+        padding: 20px;
+        text-align: center;
+    }
 
-        #media-box img {
-            max-height: 220px;
-            max-width: 100%;
-            border-radius: 8px;
-            object-fit: contain;
-            box-shadow: 0 2px 8px rgba(0,0,0,.25);
-        }
-        #media-box audio {
-            width: 100%;
-            margin-top: 6px;
-        }
-        #media-box video {
-            max-height: 220px;
-            max-width: 100%;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,.25);
-        }
+    #question-text {
+        font-size: 1.6em;
+        margin: 20px 0;
+    }
 
-        .correct { color: #2ecc71; font-weight: bold; font-size: 1.2em; }
-        .wrong   { color: #e74c3c; font-weight: bold; font-size: 1.2em; }
+    #media-box {
+        text-align: center;
+        margin: 12px auto;
+    }
+
+    #media-box.hidden {
+        display: none;
+    }
+
+    #media-box img {
+        max-height: 220px;
+        max-width: 100%;
+        border-radius: 8px;
+        object-fit: contain;
+        box-shadow: 0 2px 8px rgba(0,0,0,.25);
+    }
+
+    #media-box audio {
+        width: 100%;
+        margin-top: 6px;
+    }
+
+    #media-box video {
+        max-height: 220px;
+        max-width: 100%;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,.25);
+    }
+
+    #answers-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin-top: 20px;
+    }
+
+    .answer-btn {
+        padding: 18px;
+        border: none;
+        border-radius: 12px;
+        font-size: 1.1em;
+        cursor: pointer;
+        transition: 0.2s;
+        color: white;
+    }
+
+    .color-0 { background: #3498db; }
+    .color-1 { background: #e67e22; }
+    .color-2 { background: #9b59b6; }
+    .color-3 { background: #2ecc71; }
+
+    .answer-btn:hover {
+        transform: scale(1.04);
+        opacity: 0.95;
+    }
+
+    #feedback {
+        margin-top: 15px;
+        font-size: 1.2em;
+    }
+
+    .correct {
+        color: #2ecc71;
+        font-weight: bold;
+        font-size: 1.2em;
+    }
+
+    .wrong {
+        color: #e74c3c;
+        font-weight: bold;
+        font-size: 1.2em;
+    }
     </style>
 </head>
+
 <body>
-    <div class="game-container">
-        <h1 id="quiz-title"><?php echo htmlspecialchars($quiz['titre']); ?></h1>
 
-        <div id="question-box">
-            <h2 id="question-text">Chargement de la question...</h2>
+<div class="game-container">
 
-            <!-- Média de la question -->
-            <div id="media-box" class="hidden"></div>
-        </div>
+<h1><?= htmlspecialchars($quiz['titre']) ?></h1>
 
-        <div id="answers-grid" class="answers-grid"></div>
+<h2 id="question-text"></h2>
 
-        <div id="feedback" class="feedback"></div>
-    </div>
+<div id="media-box"></div>
 
-    <script>
-        const data = <?php echo $json_data; ?>;
-        let currentQuestionIndex = 0;
-        let score = 0;
+<div id="answers-grid"></div>
 
-        const questionText = document.getElementById('question-text');
-        const answersGrid  = document.getElementById('answers-grid');
-        const feedback     = document.getElementById('feedback');
-        const mediaBox     = document.getElementById('media-box');
+<div id="feedback"></div>
 
-        // Affiche, si possible, le média
-        function renderMedia(q) {
-            mediaBox.innerHTML = '';
-            mediaBox.classList.add('hidden');
+</div>
 
-            if (!q.media || !q.media_type) return;
+<script>
 
-            let el;
+const data = <?= $json_data ?>;
+const defi = <?= $defi_json ?>;
 
-            if (q.media_type === 'image') {
-                el = document.createElement('img');
-                el.src = q.media;
-                el.alt = 'Illustration de la question';
+let i = 0;
+let score = 0;
 
-            } else if (q.media_type === 'audio') {
-                el = document.createElement('audio');
-                el.src      = q.media;
-                el.controls = true;
+const qText = document.getElementById("question-text");
+const grid = document.getElementById("answers-grid");
+const feedback = document.getElementById("feedback");
+const mediaBox = document.getElementById("media-box");
 
-            } else if (q.media_type === 'video') {
-                el = document.createElement('video');
-                el.src      = q.media;
-                el.controls = true;
-            }
+function load() {
 
-            if (el) {
-                mediaBox.appendChild(el);
-                mediaBox.classList.remove('hidden');
-            }
+    if (i >= data.length) return end();
+
+    const q = data[i];
+
+    qText.innerText = q.sujet;
+    grid.innerHTML = "";
+    mediaBox.innerHTML = "";
+    feedback.innerHTML = "";
+
+    if (q.media) {
+
+        if (q.media_type === "image") {
+            mediaBox.innerHTML = `<img src="${q.media}">`;
         }
 
-        // Charge la question actuelle et affiche les réponses
-        function loadQuestion() {
-            feedback.innerText    = '';
-            answersGrid.innerHTML = '';
-
-            if (currentQuestionIndex >= data.length) {
-                endGame();
-                return;
-            }
-
-            const q = data[currentQuestionIndex];
-            questionText.innerText = q.sujet;
-
-            renderMedia(q);
-
-            // Affichage des réponses sous forme de 4 gros boutons colorés
-            q.reponses.forEach((reponse, index) => {
-                const button = document.createElement('button');
-                button.classList.add('answer-btn', `color-${index}`);
-                button.innerText = reponse.contenu;
-                button.onclick   = () => checkAnswer(reponse.estvraie, button);
-                answersGrid.appendChild(button);
-            });
+        if (q.media_type === "audio") {
+            mediaBox.innerHTML = `<audio controls src="${q.media}"></audio>`;
         }
 
-        // Fonction pour vérifier la réponse sélectionnée par l'utilisateur
-        function checkAnswer(isTrue, selectedButton) {
-            // Désactiver tous les boutons après le clic
-            document.querySelectorAll('.answer-btn').forEach(btn => btn.disabled = true);
+        if (q.media_type === "video") {
+            mediaBox.innerHTML = `<video controls src="${q.media}"></video>`;
+        }
+    }
 
-            // Stopper la lecture audio/vidéo avant de passer à la suite
-            const mediaEl = mediaBox.querySelector('audio, video');
-            if (mediaEl) mediaEl.pause();
+    q.reponses.forEach((r, index) => {
 
-            if (isTrue == 1) {
+        const btn = document.createElement("button");
+        btn.className = "answer-btn color-" + index;
+        btn.innerText = r.contenu;
+
+        btn.onclick = () => {
+
+            document.querySelectorAll(".answer-btn").forEach(b => b.disabled = true);
+
+            if (r.estvraie == 1) {
                 score += 100;
-                feedback.innerHTML = "<p class='correct'>Bonne réponse ! +100 pts</p>";
-                selectedButton.style.border = "4px solid #2ecc71";
+                feedback.innerHTML = "<p class='correct'>Bonne réponse +100</p>";
             } else {
-                feedback.innerHTML = "<p class='wrong'>Mauvaise réponse...</p>";
-                selectedButton.style.border = "4px solid #e74c3c";
+                feedback.innerHTML = "<p class='wrong'>Mauvaise réponse</p>";
             }
 
-            // Passer à la question suivante après 2 secondes
             setTimeout(() => {
-                currentQuestionIndex++;
-                loadQuestion();
-            }, 2000);
-        }
+                i++;
+                load();
+            }, 1000);
+        };
 
-        /* --------------------------------------------------
-           Fin de partie
-        -------------------------------------------------- */
-        function endGame() {
-            questionText.innerText = "Partie terminée !";
-            mediaBox.innerHTML     = '';
-            mediaBox.classList.add('hidden');
-            answersGrid.innerHTML  = `<h3>Votre score final : ${score} points</h3>`;
+        grid.appendChild(btn);
+    });
+}
 
-            fetch('sauvegarder_score.php', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: `score=${score}&idquiz=<?php echo $id_quiz; ?>`
-            })
-            .then(res => res.text())
-            .then(msg => {
-                feedback.innerHTML += `<p>${msg}</p><a href='index.php' class='btn'>Retour à l'accueil</a>`;
-            });
-        }
+function end() {
 
-        // Lancement du jeu au chargement de la page
-        if (data.length > 0) {
-            loadQuestion();
+    let html = `<h3>Score final : ${score}</h3>`;
+
+    if (defi.score !== null) {
+
+        html += `<h4>Score de ${defi.nom} : ${defi.score}</h4>`;
+
+        if (score > defi.score) {
+            html += `<p class='correct'>Vous avez gagné 🎉</p>`;
+        } else if (score < defi.score) {
+            html += `<p class='wrong'>Vous avez perdu 😢</p>`;
         } else {
-            questionText.innerText = "Ce quiz n'a pas encore de questions.";
+            html += `<p>Égalité 🤝</p>`;
         }
-    </script>
+    }
+
+    html += `
+        <br><br>
+        <a href="index.php" class="btn">Retour à l'accueil</a>
+    `;
+
+    grid.innerHTML = html;
+
+    fetch("sauvegarder_score.php", {
+        method: "POST",
+        headers: {"Content-Type": "application/x-www-form-urlencoded"},
+        body: `score=${score}&idquiz=<?= $id_quiz ?>`
+    })
+    .then(r => r.json())
+    .then(d => {
+        feedback.innerHTML += `<p>${d.message}</p>`;
+    });
+}
+
+load();
+
+</script>
+
 </body>
 </html>

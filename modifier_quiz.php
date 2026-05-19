@@ -83,7 +83,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 VALUES (?, ?, ?, ?)
             ");
             $stmtQ->execute([
-                htmlspecialchars($q['sujet']),
+                $q['sujet'],
                 $id,
                 $media_path,
                 $media_type,
@@ -97,7 +97,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     VALUES (?, ?, ?)
                 ");
                 $stmtR->execute([
-                    htmlspecialchars($q['reponses'][$i]),
+                    $q['reponses'][$i],
                     (isset($q['correct']) && (int)$q['correct'] === $i) ? 1 : 0,
                     $id_question
                 ]);
@@ -163,7 +163,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <!-- Information quiz -->
     <label>Titre</label>
-    <input type="text" name="titre" value="<?= htmlspecialchars($quiz['titre']) ?>" required>
+    <input type="text" name="titre" value="<?= $quiz['titre'] ?>" required>
 
     <label>Catégorie</label>
     <select name="categorie">
@@ -188,7 +188,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <input type="text"
             name="questions[<?= $qi ?>][sujet]"
-            value="<?= htmlspecialchars($q['sujet']) ?>"
+            value="<?= $q['sujet'] ?>"
             placeholder="Question..."
             required>
 
@@ -204,11 +204,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div id="preview-<?= $qi ?>">
                 <?php if ($q['media']): ?>
                     <?php if ($q['media_type'] === 'image'): ?>
-                        <img src="<?= htmlspecialchars($q['media']) ?>" class="media-preview">
+                        <img src="<?= $q['media'] ?>" class="media-preview">
                     <?php elseif ($q['media_type'] === 'audio'): ?>
-                        <audio src="<?= htmlspecialchars($q['media']) ?>" controls class="media-preview-audio"></audio>
+                        <audio src="<?= $q['media'] ?>" controls class="media-preview-audio"></audio>
                     <?php elseif ($q['media_type'] === 'video'): ?>
-                        <video src="<?= htmlspecialchars($q['media']) ?>" controls class="media-preview-video"></video>
+                        <video src="<?= $q['media'] ?>" controls class="media-preview-video"></video>
                     <?php endif; ?>
                 <?php endif; ?>
             </div>
@@ -235,16 +235,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <!-- Champs cachés remplis après upload -->
         <input type="hidden" name="questions[<?= $qi ?>][media_path]"
                id="media-path-<?= $qi ?>"
-               value="<?= htmlspecialchars($q['media'] ?? '') ?>">
+               value="<?= $q['media'] ?? '' ?>">
         <input type="hidden" name="questions[<?= $qi ?>][media_type]"
                id="media-type-<?= $qi ?>"
-               value="<?= htmlspecialchars($q['media_type'] ?? '') ?>">
+               value="<?= $q['media_type'] ?? '' ?>">
 
         <!-- Réponses -->
         <?php for ($i = 0; $i < 4; $i++): ?>
             <input type="text"
                 name="questions[<?= $qi ?>][reponses][<?= $i ?>]"
-                value="<?= htmlspecialchars($q['reponses'][$i]['contenu']) ?>"
+                value="<?= $q['reponses'][$i]['contenu'] ?>"
                 placeholder="Option <?= $i + 1 ?>"
                 required>
         <?php endfor; ?>

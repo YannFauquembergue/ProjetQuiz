@@ -16,7 +16,7 @@ if (!isset($_FILES['media']) || $_FILES['media']['error'] !== UPLOAD_ERR_OK) {
     exit;
 }
 
-/* ---- limites ---- */
+// Limites de taille et types autorisés
 const MAX_SIZE_IMAGE = 5  * 1024 * 1024;   // 5 Mo
 const MAX_SIZE_AUDIO = 10 * 1024 * 1024;   // 10 Mo
 const MAX_SIZE_VIDEO = 30 * 1024 * 1024;   // 30 Mo
@@ -55,13 +55,13 @@ if ($_FILES['media']['size'] > $info['max']) {
     exit;
 }
 
-// Création du dossier uploads/ si inexistant
+// Création du dossier uploads si inexistant
 $uploadDir = __DIR__ . '/uploads/';
 if (!is_dir($uploadDir)) {
     mkdir($uploadDir, 0755, true);
 }
 
-// Nom unique non devinable
+// Nom unique
 $filename = bin2hex(random_bytes(16)) . '.' . $info['ext'];
 $dest = $uploadDir . $filename;
 

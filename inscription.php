@@ -1,5 +1,4 @@
 <?php
-// inscription.php
 require 'config.php';
 
 $message_erreur = "";
@@ -37,7 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 ?>
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
     <meta charset="utf-8">
     <title>Projet quiz - Inscription</title>

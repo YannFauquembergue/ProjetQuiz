@@ -1,4 +1,5 @@
 <?php
+// fichier php pour recevoir le score final et l'enregistrer en base de données
 header('Content-Type: application/json');
 require 'config.php';
 
@@ -15,7 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($id_quiz > 0) {
         $stmt = $pdo->prepare("INSERT INTO resultatquiz (score, idutilisateur, idquiz) VALUES (?, ?, ?)");
         $stmt->execute([$score, $id_utilisateur, $id_quiz]);
-        echo json_encode(['statut' => 'succes', 'message' => 'Score validé et immortalisé en base de données !']);
+        echo json_encode(['statut' => 'succes', 'message' => 'Score enregistré sur votre profil !']);
     } else {
         echo json_encode(['statut' => 'erreur', 'message' => 'Données corrompues']);
     }

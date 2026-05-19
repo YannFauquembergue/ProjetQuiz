@@ -84,7 +84,7 @@ $mes_amis = $amis_stmt->fetchAll();
 ?>
 
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
     <meta charset="utf-8">
     <title>Projet quiz</title>

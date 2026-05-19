@@ -1,5 +1,5 @@
 <?php
-header('Content-Type: application/json');
+header('Content-Type: application/json; charset=utf-8');
 require 'config.php';
 
 $id_quiz = isset($_GET['id']) ? intval($_GET['id']) : 0;
@@ -40,4 +40,4 @@ foreach ($questions as $question) {
 echo json_encode([
     'titre' => $quiz['titre'],
     'questions' => $questions_pack
-]);
+], JSON_UNESCAPED_UNICODE);

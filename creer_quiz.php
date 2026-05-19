@@ -15,7 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     ");
 
     $stmt->execute([
-        htmlspecialchars($_POST['titre']),
+        $_POST['titre'],
         $_POST['categorie'],
         intval($_POST['difficulte']),
         $_SESSION['user_id']
@@ -46,7 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ");
 
             $stmtQ->execute([
-                htmlspecialchars($q['sujet']),
+                $q['sujet'],
                 $id_quiz,
                 $media_path,
                 $media_type
@@ -72,7 +72,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     ");
 
                     $stmtR->execute([
-                        htmlspecialchars($q['reponses'][$i]),
+                        $q['reponses'][$i],
                         $estVraie,
                         $id_question
                     ]);
@@ -87,7 +87,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 ?>
 
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
     <meta charset="utf-8">
     <title>Projet quiz - Création quiz</title>

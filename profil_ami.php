@@ -14,24 +14,25 @@ if (!isset($_GET['id'])) {
 
 $friend_id = intval($_GET['id']);
 
-/* Vérifier que c'est bien un ami */
+/* Vérification amitié */
 $check = $pdo->prepare("
     SELECT id FROM amis 
     WHERE (idutilisateur1 = ? AND idutilisateur2 = ?)
        OR (idutilisateur1 = ? AND idutilisateur2 = ?)
 ");
+
 $check->execute([$my_id, $friend_id, $friend_id, $my_id]);
 
 if (!$check->fetch()) {
     die("Vous n'êtes pas amis avec cet utilisateur.");
 }
 
-/* Information utilisateur */
+/* Infos utilisateur */
 $stmt = $pdo->prepare("SELECT identifiant FROM utilisateur WHERE id = ?");
 $stmt->execute([$friend_id]);
 $user = $stmt->fetch();
 
-/* Résultats quiz */
+/* Résultats quiz de l'ami */
 $stmt = $pdo->prepare("
     SELECT r.score, q.titre, q.id AS quiz_id
     FROM resultatquiz r
@@ -39,52 +40,52 @@ $stmt = $pdo->prepare("
     WHERE r.idutilisateur = ?
     ORDER BY r.id DESC
 ");
+
 $stmt->execute([$friend_id]);
 $resultats = $stmt->fetchAll();
-
-/* Statistiques */
-$total_quiz = count($resultats);
-$best_score = 0;
-
-foreach ($resultats as $r) {
-    if ($r['score'] > $best_score) {
-        $best_score = $r['score'];
-    }
-}
 ?>
 
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="utf-8">
-    <title>Projet quiz - Espace ami</title>
+    <title>Profil ami</title>
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-<div class="container" style="max-width:900px;">
+<div class="container">
 
-    <h1>Espace de <?= htmlspecialchars($user['identifiant']) ?></h1>
+    <h1>Profil de <?= htmlspecialchars($user['identifiant']) ?></h1>
 
-    <!-- Statistiques -->
-    <div class="item-card">
-        <strong>Statistiques</strong><br>
-        Quiz joués : <?= $total_quiz ?><br>
-        Meilleur score : <?= $best_score ?>
-    </div>
+    <h3>Stats</h3>
 
-    <!-- Résultats quiz -->
-    <h3>Résultats</h3>
+    <p>
+        Quiz joués : <?= count($resultats) ?>
+    </p>
+
+    <h3>Ses résultats</h3>
+
     <?php if (empty($resultats)): ?>
         <p>Aucun résultat.</p>
     <?php else: ?>
+
         <?php foreach ($resultats as $r): ?>
             <div class="item-card">
+
                 <strong><?= htmlspecialchars($r['titre']) ?></strong><br>
-                Score : <?= $r['score'] ?>
+
+                Score : <?= $r['score'] ?><br><br>
+
+                <!-- Bouton pour défier -->
+                <a class="btn" href="jouer.php?id=<?= $r['quiz_id'] ?>&defi=<?= $friend_id ?>">
+                    Défier
+                </a>
+
             </div>
         <?php endforeach; ?>
+
     <?php endif; ?>
 
 </div>
