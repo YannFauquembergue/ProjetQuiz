@@ -18,7 +18,7 @@ if (!$quiz) {
     exit;
 }
 
-$stmtQ = $pdo->prepare("SELECT id, sujet FROM question WHERE idquiz = ?");
+$stmtQ = $pdo->prepare("SELECT id, sujet, media, media_type FROM question WHERE idquiz = ?");
 $stmtQ->execute([$id_quiz]);
 $questions = $stmtQ->fetchAll();
 
@@ -29,14 +29,15 @@ foreach ($questions as $question) {
     $reponses = $stmtR->fetchAll();
 
     $questions_pack[] = [
-        'id' => $question['id'],
-        'sujet' => $question['sujet'],
-        'reponses' => $reponses
+        'id'         => $question['id'],
+        'sujet'      => $question['sujet'],
+        'media'      => $question['media'],       // chemin relatif ou null
+        'media_type' => $question['media_type'],  // 'image' | 'audio' | 'video' | null
+        'reponses'   => $reponses
     ];
 }
 
 echo json_encode([
-    'titre' => $quiz['titre'],
+    'titre'     => $quiz['titre'],
     'questions' => $questions_pack
 ]);
-?>
