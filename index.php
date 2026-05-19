@@ -72,7 +72,7 @@ $demandes = $demandes->fetchAll();
 
 // 5. AMIS
 $amis_stmt = $pdo->prepare("
-    SELECT u.identifiant 
+    SELECT u.id, u.identifiant 
     FROM amis a 
     JOIN utilisateur u 
     ON (a.idutilisateur1 = u.id OR a.idutilisateur2 = u.id)
@@ -96,16 +96,22 @@ $mes_amis = $amis_stmt->fetchAll();
 <div class="container" style="max-width: 1100px;">
 
     <header style="display:flex; justify-content:space-between; align-items:center; margin-bottom:25px;">
+
         <h2>Bienvenue <?= htmlspecialchars($_SESSION['username'] ?? 'Joueur') ?></h2>
-        <a href="deconnexion.php" class="btn btn-secondary">Déconnexion</a>
+
+        <div style="display:flex; gap:10px; align-items:center;">
+            <a href="profil.php" class="btn">Mon espace</a>
+            <a href="deconnexion.php" class="btn btn-secondary">Déconnexion</a>
+        </div>
+
     </header>
 
     <div class="split-layout">
 
-        <!-- QUIZ -->
+        <!-- Liste des quiz -->
         <div class="column" style="flex: 1.6;">
 
-            <h3>Pyramides de questions</h3>
+            <h3>Liste de quiz</h3>
 
             <a href="creer_quiz.php" class="btn" style="margin-bottom:20px;">Créer un quiz</a>
 
@@ -119,8 +125,8 @@ $mes_amis = $amis_stmt->fetchAll();
                         <div>
                             <strong><?= htmlspecialchars($q['titre']) ?></strong><br>
                             <small>
-                                Concepteur : <?= htmlspecialchars($q['identifiant']) ?> |
-                                Catégorie : <?= htmlspecialchars($q['categorie']) ?>
+                                Créateur: <?= htmlspecialchars($q['identifiant']) ?> |
+                                Catégorie: <?= htmlspecialchars($q['categorie']) ?>
                             </small>
                         </div>
 
@@ -147,10 +153,10 @@ $mes_amis = $amis_stmt->fetchAll();
 
         </div>
 
-        <!-- AMIS -->
+        <!-- Section amis -->
         <div class="column">
 
-            <h3>👥 Inviter des joueurs</h3>
+            <h3>Inviter des joueurs</h3>
 
             <form method="POST" style="margin-bottom:20px;">
                 <input type="text" name="nom_ami" placeholder="Rechercher un pseudo..." required>
@@ -161,7 +167,6 @@ $mes_amis = $amis_stmt->fetchAll();
 
             <?php if (!empty($demandes)): ?>
                 <h4>Demandes reçues</h4>
-
                 <?php foreach ($demandes as $d): ?>
                     <div class="item-card" style="background:#fff3cd;">
 
@@ -188,7 +193,9 @@ $mes_amis = $amis_stmt->fetchAll();
             <?php else: ?>
                 <?php foreach ($mes_amis as $am): ?>
                     <div class="item-card">
-                        <?= htmlspecialchars($am['identifiant']) ?>
+                        <a href="profil_ami.php?id=<?= $am['id'] ?>" style="text-decoration:none; color:inherit;">
+                            <?= htmlspecialchars($am['identifiant']) ?>
+                        </a>
                     </div>
                 <?php endforeach; ?>
             <?php endif; ?>

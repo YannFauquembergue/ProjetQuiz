@@ -76,7 +76,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Création Quiz</title>
+    <title>Création quiz</title>
     <link rel="stylesheet" href="style.css">
 
     <style>
@@ -96,7 +96,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <div class="container" style="max-width:700px;">
 
-    <h1>Nouveau Quiz</h1>
+    <h1>Nouveau quiz</h1>
 
     <form method="POST">
 
@@ -117,12 +117,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <hr>
 
-        <!-- QUESTIONS -->
+        <!-- Questions -->
         <h2>Questions</h2>
-
         <div id="questions-container">
 
-            <!-- QUESTION 0 -->
+            <!-- Question 0 (qui apparaît dans le formulaire par défaut) -->
             <div class="question-block">
 
                 <input type="text" name="questions[0][sujet]" placeholder="Question..." required>
@@ -147,11 +146,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         </div>
 
-        <button type="button" onclick="addQuestion()">+ Ajouter une question</button>
+        <button type="button" onclick="addQuestion()">Ajouter une question</button>
 
         <br><br>
 
-        <button type="submit">Publier le quiz</button>
+        <button type="submit" class="btn">Publier quiz</button>
 
     </form>
 </div>

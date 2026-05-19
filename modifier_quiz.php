@@ -1,6 +1,7 @@
 <?php
 require 'config.php';
 
+// Vérification de l'authentification
 if (!isset($_SESSION['user_id'])) {
     header('Location: connexion.php');
     exit;
@@ -9,9 +10,7 @@ if (!isset($_SESSION['user_id'])) {
 $my_id = $_SESSION['user_id'];
 $id = intval($_GET['id'] ?? 0);
 
-/* =========================
-   1. CHARGEMENT QUIZ
-========================= */
+// On charge le quiz concerné
 $stmt = $pdo->prepare("SELECT * FROM quiz WHERE id = ?");
 $stmt->execute([$id]);
 $quiz = $stmt->fetch();
@@ -20,9 +19,7 @@ if (!$quiz || $quiz['idutilisateur'] != $my_id) {
     die("Accès refusé");
 }
 
-/* =========================
-   2. CHARGEMENT QUESTIONS
-========================= */
+// On charge les questions et leurs réponses
 $stmtQ = $pdo->prepare("SELECT * FROM question WHERE idquiz = ?");
 $stmtQ->execute([$id]);
 $questions = $stmtQ->fetchAll();
@@ -34,12 +31,10 @@ foreach ($questions as &$q) {
 }
 unset($q);
 
-/* =========================
-   3. SAUVEGARDE
-========================= */
+// Sauvegarde
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-    // update quiz
+    // mise à jour quiz
     $stmt = $pdo->prepare("
         UPDATE quiz 
         SET titre = ?, categorie = ?, difficulte = ?
@@ -103,7 +98,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
+<meta charset="utf-8">
 <title>Modifier Quiz</title>
 <link rel="stylesheet" href="style.css">
 
@@ -121,7 +116,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <div class="container" style="max-width:700px;">
 
-<h1>Modifier le Quiz</h1>
+<h1>Modification quiz</h1>
 
 <form method="POST">
 
@@ -130,8 +125,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <input type="text" name="titre" value="<?= htmlspecialchars($quiz['titre']) ?>" required>
 
 <label>Catégorie</label>
-<input type="text" name="categorie" value="<?= htmlspecialchars($quiz['categorie']) ?>">
-
+<select name="categorie">
+            <option value="Aucune">Aucune</option>
+            <option value="Sport">Sport</option>
+            <option value="Culture générale">Culture générale</option>
+            <option value="Divertissement">Divertissement</option>
+        </select>
+    
 <label>Difficulté</label>
 <input type="number" name="difficulte" value="<?= $quiz['difficulte'] ?>" min="1" max="5">
 
@@ -165,9 +165,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <?php endfor; ?>
     </select>
 
-    <!-- 🗑 suppression -->
     <button type="button" onclick="removeQuestion(this)">
-        Supprimer cette question
+        Supprimer
     </button>
 
 </div>
@@ -175,15 +174,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 </div>
 
-<!-- ➕ ajouter question -->
 <button type="button" onclick="addQuestion()">
-    + Ajouter une question
+    Ajouter une question
 </button>
 
 <br><br>
 
 <button type="submit" class="btn">
-    Enregistrer les modifications
+    Enregistrer modifications
 </button>
 
 </form>
@@ -193,9 +191,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <script>
 let index = <?= count($questions) ?>;
 
-/* =========================
-   AJOUT QUESTION
-========================= */
+// Fonction d'ajout de question
 function addQuestion() {
 
     const container = document.getElementById("questions-container");
@@ -227,7 +223,7 @@ function addQuestion() {
     index++;
 }
 
-// Suppression d'une question
+// Fonction suppression d'une question
 function removeQuestion(btn) {
     btn.closest(".question-block").remove();
 }
