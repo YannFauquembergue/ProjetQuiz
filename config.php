@@ -1,0 +1,31 @@
+<?php
+// config.php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+$host = '127.0.0.1';
+$port = '3306'; // Configuration explicite du port indiqué dans ton dump SQL
+$db   = 'projetquiz';
+$user = 'root';
+$pass = ''; // Laisse vide si tu es sur WampServer/XAMPP classique. 
+            // Si tu utilises MAMP sur Mac, remplace par 'root'
+
+$dsn = "mysql:host=$host;port=$port;dbname=$db;charset=utf8mb4";
+$options = [
+    PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+    PDO::ATTR_EMULATE_PREPARES   => false,
+];
+
+try {
+     $pdo = new PDO($dsn, $user, $pass, $options);
+} catch (\PDOException $e) {
+     // En cas d'erreur, on affiche le vrai message technique pour savoir d'où vient le problème
+     header('Content-Type: application/json');
+     die(json_encode([
+         'erreur' => 'Impossible de lier la base de données',
+         'details_techniques' => $e->getMessage()
+     ]));
+}
+?>
